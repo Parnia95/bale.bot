@@ -1,5 +1,8 @@
 import telebot
 from telebot import apihelper
+import os
+from flask import Flask
+import threading
 
 apihelper.API_URL = "https://tapi.bale.ai/bot{0}/{1}"
 
@@ -36,5 +39,18 @@ def anonymous(message):
         print("ذخیره شد: پیام {} ← کاربر {}".format(sent.message_id, user_id))
         bot.reply_to(message, "✅ پیامت رسید!")
 
-print("ربات روشن شد...")
-bot.infinity_polling()
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "ربات روشن است!"
+
+def run_bot():
+    print("ربات روشن شد...")
+    bot.infinity_polling()
+
+if __name__ == "__main__":
+    t = threading.Thread(target=run_bot)
+    t.start()
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
